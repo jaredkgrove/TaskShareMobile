@@ -1,0 +1,16 @@
+{
+  "name": "TaskShareMobile",
+  "displayName": "TaskShareMobile",
+  "android": {
+    "package": "com.tasksharemobile",
+    "googleServicesFile": "./android/app/google-services.json"
+  },
+  "expo": {
+    "name": "TaskShareMobile",
+    "slug": "TaskShareMobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

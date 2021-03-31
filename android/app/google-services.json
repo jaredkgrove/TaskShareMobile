@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "203481644879",
+    "project_id": "taskshare",
+    "storage_bucket": "taskshare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203481644879:android:10bfe8628da67d6b424f3a",
+        "android_client_info": {
+          "package_name": "com.tasksharemobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203481644879-126g8ga1cds7sfbj4tkg7ukeaa0n9suk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tasksharemobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "203481644879-kphv934udt5fnj31emn1fd1ffp81fr5r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSuayRJ-96-vIM6MTH13sJY8BCF2pCY08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203481644879-ddk4fkerabpiv06bkgo09psskfj8t4c2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
