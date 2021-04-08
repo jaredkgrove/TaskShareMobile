@@ -6,8 +6,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator<RootStackParamList>();
 
-//Firebase
-import firestore,{firebase} from '@react-native-firebase/firestore';
 
 //AUTH
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
@@ -18,45 +16,49 @@ import {RootStackParamList} from '../types'
 
 //SCREENS
 import HomeScreen from '../screens/HomeScreen';
-import DetailsScreen from '../screens/DetailsScreen';
+import ActiveListScreen from './ActiveListScreen';
 
-import { authChanged } from '../redux/slices/UserSlice'
+import firestore from '@react-native-firebase/firestore';
+
+
 import { useReduxDispatch, useReduxSelector } from '../redux/store'
+import { setUser } from '../redux/slices/UserSlice';
+import { createUser } from '../api/firebase/FirestoreAPI';
 
 const MainScreen = () => {
+  //LOCAL STATE
   const [initializing, setInitializing] = useState<boolean>(true);
-  
+  const [googleUser, setGoogleUser] = useState<GoogleSignIn.GoogleUser|null>(null)
+  //APP STATE
   const currentUser = useReduxSelector(state => state.user);
   const dispatch = useReduxDispatch()
-  // const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
-
-  const onAuthStateChanged = (userState:FirebaseAuthTypes.User | null) => {
-  //   console.log("userState ", userState)
-  //   if(userState){
-  //     await firestore()
-  //       .collection("users")
-  //       .doc(userState.uid)
-  //       .set({
-  //         id: userState.uid,
-  //         emailAddress: userState.email,
-  //         verified: userState.emailVerified,
-  //       });
-  //   }
-  //   setUser(userState);
-  //   if(initializing) setInitializing(false)
-    dispatch<any>(authChanged(userState))
+  let subscriber2:() => void;
+  // let thing:() => void
+  
+  //FIRESTORE LISTENERS
+  const onAuthStateChanged = (userState:FirebaseAuthTypes.User|null) => {
+    if(subscriber2){subscriber2()}   
+    if(userState){
+      subscriber2 = firestore().collection("users").doc(userState?.uid).onSnapshot((doc) => {
+        if(!doc.exists){
+          createUser(userState, googleUser)
+        }else{
+         
+          let user:any = doc.data()
+          dispatch(setUser(user))
+        }
+      });
+    }else{
+      dispatch(setUser({emailAddress: null, emailVerified: false, displayName: null, googleUserUID:null}))
+    }
     if(initializing) setInitializing(false)
   }
 
   useEffect(() => {
     GoogleSignInInit()
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    return () => {subscriber();if(subscriber2){subscriber2()};} // unsubscribe on unmount
   }, []);
-
-  useEffect(() => {
-    console.log('currentUser ', currentUser)
-}, [currentUser]);
 
   const GoogleSignInInit = async () => {
       try {
@@ -75,15 +77,18 @@ const MainScreen = () => {
 
   const signInAsync = async () => {
     try {
+
       await GoogleSignIn.askForPlayServicesAsync();
       const { type, user }:GoogleSignIn.GoogleSignInAuthResult = await GoogleSignIn.signInAsync();
       if(user?.auth){
-        const {idToken, accessToken} = user.auth;
+        setGoogleUser(user)
+        const {idToken, accessToken, refreshToken} = user.auth;
         const credential = auth.GoogleAuthProvider.credential(
           idToken ? idToken:null,
           accessToken,
         );
-        await auth().signInWithCredential(credential);
+        
+        await auth().signInWithCredential(credential)
       }
     } catch ({ message }) {
       alert('login: Error:' + message);
@@ -92,7 +97,7 @@ const MainScreen = () => {
 
 
   const onPress = async () => {
-    if (currentUser) {
+    if (currentUser?.emailAddress) {
       await signOutAsync();
     } else {
       await signInAsync();
@@ -101,11 +106,13 @@ const MainScreen = () => {
 
   if (initializing) return null;
 
-  if (!currentUser?.id) {      
+  if (!currentUser?.emailAddress) {      
       return (
           <View>
             <Text>Please login</Text>
             <Text onPress={onPress}>Toggle Auth</Text>
+            <Text onPress={onPress}>Logout</Text>
+
           </View>
       )
   }
@@ -115,11 +122,11 @@ const MainScreen = () => {
       <NavigationContainer>
           <Stack.Navigator> 
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Details" component={DetailsScreen} />
+          <Stack.Screen name="ActiveList" component={ActiveListScreen} />
           </Stack.Navigator>
       </NavigationContainer>
-      <Text>{currentUser.emailAddress}</Text>
       <Text onPress={onPress}>Logout</Text>
+
     </>
   );
 }

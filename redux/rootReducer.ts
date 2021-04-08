@@ -1,15 +1,19 @@
-import { Task } from './slices/TasksSlice'
-import { User } from './slices/UserSlice'
-import tasksReducer from './slices/TasksSlice'
+import { TaskList, ActiveList } from '../types'
+import { User } from '../types'
+
+import activeListReducer from './slices/ActiveListSlice'
+import taskListsReducer from './slices/TaskListsSlice'
 import userReducer from './slices/UserSlice'
 
 //redux toolkit just needs the reducers in an object so no need for combineReducers
 export interface RootState {
-    tasks: Task[],
+    activeList: ActiveList,
+    taskLists: TaskList[],
     user: User
 }
 
 export const rootReducer = {
-    tasks: tasksReducer,
-    user: userReducer
+    activeList: activeListReducer,
+    taskLists: taskListsReducer,
+    user: userReducer,
 }
