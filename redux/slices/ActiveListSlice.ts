@@ -14,6 +14,7 @@ const activeListSlice = createSlice({
             state.tasks = []
         },
         setTasks: (state, {payload}) => {
+            console.log("tasks ", payload)
             state.tasks = payload
         },
         addTask: (state, {payload}) =>  {

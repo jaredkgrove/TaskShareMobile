@@ -8,8 +8,8 @@ import { useReduxDispatch, useReduxSelector } from '../redux/store'
 import { setTasks } from '../redux/slices/ActiveListSlice'
 
 import firestore from '@react-native-firebase/firestore';
-import { createTask, CreateTask } from '../api/firebase/FirestoreAPI';
-
+import { createTask } from '../api/firebase/FirestoreAPI';
+import { CreateTask, TaskStatus } from '../types'
 const ActiveListScreen = () => {
   const [newTask, setNewTask] = useState<CreateTask>({title: ''})
 
@@ -29,6 +29,7 @@ const ActiveListScreen = () => {
           })
           dispatch(setTasks(tasks))
         });
+
     }
     return subscriber
   }, [listData]);

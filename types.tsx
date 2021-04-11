@@ -22,29 +22,43 @@ export interface User{
 
 export interface TaskList{
   firestoreId: string;
-  etag?: string;
-  id: string;
-  kind: string;
-  selfLink: string;
   title: string;
-  updated: string;
   userId: string;
+  etag?: string;
+  googleTaskLink?: string;
+  googleId?: string;
+  // updated: string;
 }
 
 export interface Task{
   firestoreId: string|null;
-  due: string|null;
-  etag: string;
-  id: string;
-  kind: string;
-  position: string;
-  selfLink: string;
-  status: string;
+  status: TaskStatus;
   title: string;
-  updated: string;
+  // updated: string;
+  due?: string;
+  etag?: string;
+  kind?: string;
+  position?: string;
+  googleTaskLink?: string;
+  googleId?: string;
+}
+
+export enum TaskStatus {
+  needsAction = "needsAction",
+  completed = "completed",
 }
 
 export interface ActiveList {
   data:TaskList|null;
   tasks:Task[];
+}
+
+export interface CreateTaskList {
+  title: string
+}
+
+export interface CreateTask {
+  // status: string,
+  title: string,
+  // completedDate: null
 }

@@ -1,20 +1,9 @@
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore';
-import { TaskList, User } from '../../types';
+import { CreateTask, CreateTaskList, TaskList, TaskStatus, User } from '../../types';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import { setTaskLists } from '../../redux/slices/TaskListsSlice'
 import {AppDispatch} from '../../redux/store'
-
-//TYPES
-export interface CreateTaskList {
-    // userId: string|null
-    title: string
-}
-
-export interface CreateTask {
-    // userId: string|null
-    title: string
-}
 
 //CREATE ACTIONS
 
@@ -24,7 +13,7 @@ export const createTaskList = (list: CreateTaskList) => {
 
 export const createTask = (list: TaskList|null, task: CreateTask) => {
     if(list){
-        firestore().collection('taskLists').doc(list.firestoreId).collection('tasks').add({userId: currentUserId(), ...task})
+        firestore().collection('taskLists').doc(list.firestoreId).collection('tasks').add({userId: currentUserId(), status: TaskStatus.needsAction, completedDate: null, ...task})
     }
 }
 

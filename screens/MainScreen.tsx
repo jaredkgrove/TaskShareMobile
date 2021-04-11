@@ -4,6 +4,7 @@ import { View, Text, Button } from 'react-native';
 //REACT NAVIGATION
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 
@@ -57,12 +58,22 @@ const MainScreen = () => {
   useEffect(() => {
     GoogleSignInInit()
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    // fetchTokens2()
     return () => {subscriber();if(subscriber2){subscriber2()};} // unsubscribe on unmount
   }, []);
+
+  useEffect(() => {
+    if(googleUser){
+      //call cloud function to exchange serverAuthCode for access and refresh tokens
+    }
+  }, [googleUser]);
 
   const GoogleSignInInit = async () => {
       try {
         await GoogleSignIn.initAsync({
+          webClientId:'203481644879-kphv934udt5fnj31emn1fd1ffp81fr5r.apps.googleusercontent.com',
+
+            isOfflineEnabled: true,
             scopes: [GoogleSignIn.SCOPES.PROFILE, GoogleSignIn.SCOPES.EMAIL, "https://www.googleapis.com/auth/tasks"],
         });
       } catch ({ message }) {
@@ -77,18 +88,19 @@ const MainScreen = () => {
 
   const signInAsync = async () => {
     try {
-
       await GoogleSignIn.askForPlayServicesAsync();
       const { type, user }:GoogleSignIn.GoogleSignInAuthResult = await GoogleSignIn.signInAsync();
       if(user?.auth){
         setGoogleUser(user)
+        // console.log("userguy ",user)
         const {idToken, accessToken, refreshToken} = user.auth;
         const credential = auth.GoogleAuthProvider.credential(
           idToken ? idToken:null,
           accessToken,
         );
         
-        await auth().signInWithCredential(credential)
+        const a = await auth().signInWithCredential(credential)
+        // console.log("a ",a)
       }
     } catch ({ message }) {
       alert('login: Error:' + message);
@@ -121,7 +133,20 @@ const MainScreen = () => {
     <>     
       <NavigationContainer>
           <Stack.Navigator> 
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{
+
+              headerStyle: {
+                backgroundColor: '#ECF0F3',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}  
+          />
           <Stack.Screen name="ActiveList" component={ActiveListScreen} />
           </Stack.Navigator>
       </NavigationContainer>
